@@ -1,7 +1,7 @@
 using Alternance.Infrastructure.Cache;
 using Alternance.Infrastructure.Interface;
 using Alternance.Infrastructure.MongoDb;
-using Alternance.Infrastructure.MongoDb.Collections;
+using Alternance.Infrastructure.Repositories;
 using Alternance.Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

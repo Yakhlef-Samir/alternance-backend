@@ -1,6 +1,7 @@
 using Alternance.Domain.Entities;
+using Alternance.Infrastructure.MongoDb;
 
-namespace Alternance.Infrastructure.MongoDb.Collections;
+namespace Alternance.Infrastructure.Repositories;
 
 public class CompaniesRepository : MongoRepository<Company>
 {

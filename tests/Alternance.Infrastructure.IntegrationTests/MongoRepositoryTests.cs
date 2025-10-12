@@ -1,7 +1,7 @@
 using Alternance.Domain.Entities;
 using Alternance.Domain.Enum;
 using Alternance.Infrastructure.MongoDb;
-using Alternance.Infrastructure.MongoDb.Collections;
+using Alternance.Infrastructure.Repositories;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Xunit;

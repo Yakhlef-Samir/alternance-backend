@@ -1,4 +1,5 @@
-using Alternance.Infrastructure.MongoDb.Collections;
+
+using Alternance.Infrastructure.Repositories;
 
 namespace Alternance.Infrastructure.MongoDb;
 
