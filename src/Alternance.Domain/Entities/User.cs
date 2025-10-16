@@ -12,7 +12,6 @@ public class User : BaseEntity
     public string LastName { get; private set; } = string.Empty;
     public UserType UserType { get; private set; }  // "Student" or "Company"
 
-    private User() { } // For ORM
 
     public User(Guid userId, string email, string passwordHash, string firstName, string lastName, UserType userType)
     {
@@ -24,9 +23,11 @@ public class User : BaseEntity
         UserType = userType;
     }
 
-    public void UpdateProfile(string firstName, string lastName)
+    public void UpdateProfile(string firstName, string lastName, string email)
     {
         FirstName = firstName;
         LastName = lastName;
+        Email = email;
+        MarkAsUpdated();
     }
 }

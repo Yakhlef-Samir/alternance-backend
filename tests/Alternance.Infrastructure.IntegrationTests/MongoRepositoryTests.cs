@@ -5,6 +5,7 @@ using Alternance.Infrastructure.Repositories;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Xunit;
+using ApplicationEntity = Alternance.Domain.Entities.Application;
 
 namespace Alternance.Infrastructure.IntegrationTests;
 
@@ -120,7 +121,7 @@ public class MongoRepositoryTests
         // Scénario 3: Un utilisateur met à jour son profil
         User user = new User(
             userId: Guid.NewGuid(),
-            email: "marie.martin@example.com",
+            email: "marie.martin@student.com",
             passwordHash: "$2a$11$hashed_password",
             firstName: "Marie",
             lastName: "Martin",
@@ -128,7 +129,7 @@ public class MongoRepositoryTests
         );
 
         // L'utilisateur met à jour son nom après mariage
-        user.UpdateProfile("Marie", "Dubois");
+        user.UpdateProfile("Marie", "Dubois", "marie.dubois@student.com");
 
         await _userRepository.AddAsync(user);
 
@@ -204,7 +205,7 @@ public class MongoRepositoryTests
     public async Task AddAsync_ShouldCreatePendingApplication()
     {
         // Scénario 1: Un étudiant postule à une offre (statut initial: Pending)
-        Application application = new Application(
+        ApplicationEntity application = new ApplicationEntity(
             studentId: Guid.NewGuid(),
             jobId: Guid.NewGuid(),
             coverLetter: "Madame, Monsieur,\n\nJe suis actuellement en dernière année de Master en Informatique et je suis très intéressé par le poste de Développeur .NET en alternance au sein de votre entreprise.\n\nMon parcours académique et mes projets personnels m'ont permis de développer des compétences solides en C#, ASP.NET Core et MongoDB.\n\nCordialement,\nJohn Doe",
@@ -212,12 +213,12 @@ public class MongoRepositoryTests
 
         await _applicationRepository.AddAsync(application);
 
-        List<Application> storedApplications = await _applicationRepository.GetAllAsync();
+        List<ApplicationEntity> storedApplications = await _applicationRepository.GetAllAsync();
 
         storedApplications
             .Should()
             .ContainSingle(a => a.Id == application.Id)
-            .Which.Should().Match<Application>(a => 
+            .Which.Should().Match<ApplicationEntity>(a => 
                 a.Status == ApplicationStatus.Pending &&
                 a.ReviewedAt == null &&
                 a.AppliedAt <= DateTime.UtcNow);
@@ -227,7 +228,7 @@ public class MongoRepositoryTests
     public async Task Application_ShouldBeAcceptedAfterReview()
     {
         // Scénario 2: L'entreprise examine la candidature et l'accepte
-        Application application = new Application(
+        ApplicationEntity application = new ApplicationEntity(
             studentId: Guid.NewGuid(),
             jobId: Guid.NewGuid(),
             coverLetter: "Je souhaite rejoindre votre équipe pour développer mes compétences en développement web.",
@@ -241,9 +242,9 @@ public class MongoRepositoryTests
 
         await _applicationRepository.AddAsync(application);
 
-        List<Application> storedApplications = await _applicationRepository.GetAllAsync();
+        List<ApplicationEntity> storedApplications = await _applicationRepository.GetAllAsync();
 
-        Application? stored = storedApplications.FirstOrDefault(a => a.Id == application.Id);
+        ApplicationEntity? stored = storedApplications.FirstOrDefault(a => a.Id == application.Id);
         
         stored.Should().NotBeNull();
         stored!.Status.Should().Be(ApplicationStatus.Accepted);
@@ -255,7 +256,7 @@ public class MongoRepositoryTests
     public async Task Application_ShouldBeRejectedAfterReview()
     {
         // Scénario 3: L'entreprise examine la candidature mais la rejette
-        Application application = new Application(
+        ApplicationEntity application = new ApplicationEntity(
             studentId: Guid.NewGuid(),
             jobId: Guid.NewGuid(),
             coverLetter: "Je suis intéressé par cette opportunité.",
@@ -269,9 +270,9 @@ public class MongoRepositoryTests
 
         await _applicationRepository.AddAsync(application);
 
-        List<Application> storedApplications = await _applicationRepository.GetAllAsync();
+        List<ApplicationEntity> storedApplications = await _applicationRepository.GetAllAsync();
 
-        Application? stored = storedApplications.FirstOrDefault(a => a.Id == application.Id);
+        ApplicationEntity? stored = storedApplications.FirstOrDefault(a => a.Id == application.Id);
         
         stored.Should().NotBeNull();
         stored!.Status.Should().Be(ApplicationStatus.Rejected);
@@ -282,7 +283,7 @@ public class MongoRepositoryTests
     public async Task Application_ShouldStayInReviewedStatus()
     {
         // Scénario 4: L'entreprise a examiné la candidature mais n'a pas encore pris de décision
-        Application application = new Application(
+        ApplicationEntity application = new ApplicationEntity(
             studentId: Guid.NewGuid(),
             jobId: Guid.NewGuid(),
             coverLetter: "Passionné par le développement logiciel, je souhaite mettre mes compétences au service de votre entreprise.",
@@ -293,9 +294,9 @@ public class MongoRepositoryTests
 
         await _applicationRepository.AddAsync(application);
 
-        List<Application> storedApplications = await _applicationRepository.GetAllAsync();
+        List<ApplicationEntity> storedApplications = await _applicationRepository.GetAllAsync();
 
-        Application? stored = storedApplications.FirstOrDefault(a => a.Id == application.Id);
+        ApplicationEntity? stored = storedApplications.FirstOrDefault(a => a.Id == application.Id);
         
         stored.Should().NotBeNull();
         stored!.Status.Should().Be(ApplicationStatus.Reviewed);
@@ -357,7 +358,7 @@ public class MongoRepositoryTests
         await _jobRepository.AddAsync(job);
 
         // ÉTAPE 4: L'étudiant postule à l'offre
-        Application application = new Application(
+        ApplicationEntity application = new ApplicationEntity(
             studentId: student.StudentId,
             jobId: job.JobId,
             coverLetter: "Madame, Monsieur,\n\nJe suis très intéressé par le poste de Développeur Full Stack en alternance. Mon expérience en C# et React correspond parfaitement à vos besoins.\n\nCordialement,\nThomas Bernard",
@@ -369,7 +370,7 @@ public class MongoRepositoryTests
         List<User> users = await _userRepository.GetAllAsync();
         List<Student> students = await _studentRepository.GetAllAsync();
         List<Job> jobs = await _jobRepository.GetAllAsync();
-        List<Application> applications = await _applicationRepository.GetAllAsync();
+        List<ApplicationEntity> applications = await _applicationRepository.GetAllAsync();
 
         // Vérifier que le User existe
         users.Should().ContainSingle(u => u.UserId == studentUser.UserId)

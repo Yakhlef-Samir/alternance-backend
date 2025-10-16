@@ -20,7 +20,6 @@ public class Student : BaseEntity
         UserId = userId;
         StudentId = studentId;
     }
-
     public void UpdateProfile(string? phone, string? bio, string? location, string? resumeUrl, List<string> skills, int? experienceYears)
     {
         Phone = phone;
@@ -29,6 +28,7 @@ public class Student : BaseEntity
         ResumeUrl = resumeUrl;
         Skills = skills;
         ExperienceYears = experienceYears;
+        MarkAsUpdated();
     }
 
     public void AddSkill(string skill)

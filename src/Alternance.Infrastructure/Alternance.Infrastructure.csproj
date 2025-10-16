@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Alternance.Domain\Alternance.Domain.csproj" />
+    <ProjectReference Include="..\Alternance.Application\Alternance.Application.csproj" />
   </ItemGroup>
 
 </Project>

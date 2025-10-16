@@ -1,3 +1,4 @@
+using Alternance.Application.Interfaces;
 using Alternance.Infrastructure.Cache;
 using Alternance.Infrastructure.Interface;
 using Alternance.Infrastructure.MongoDb;
@@ -17,11 +18,16 @@ public static class DependencyInjection
         // MongoDB
         services.AddSingleton<MongoDbContext>();
         services.AddSingleton<CollectionsIndex>();
-        services.AddScoped<JobsRepository>();
-        services.AddScoped<ApplicationsRepository>();
-        services.AddScoped<CompaniesRepository>();
-        services.AddScoped<StudentsRepository>();
+        services.AddScoped<JobRepository>();
+        services.AddScoped<IJobRepository, JobRepository>();
+        services.AddScoped<ApplicationRepository>();
+        services.AddScoped<IApplicationRepository, ApplicationRepository>();
+        services.AddScoped<CompanyRepository>();
+        services.AddScoped<ICompanyRepository, CompanyRepository>();
+        services.AddScoped<StudentRepository>();
+        services.AddScoped<IStudentRepository, StudentRepository>();
         services.AddScoped<UsersRepository>();
+        services.AddScoped<IUserRepository, UsersRepository>();
 
         // Legacy support - keep generic repository for backward compatibility
         services.AddScoped(typeof(IRepository<>), typeof(MongoRepository<>));
@@ -33,6 +39,7 @@ public static class DependencyInjection
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IStorageService, StorageService>();
         services.AddScoped<IAIService, AIService>();
+        services.AddScoped<IPasswordHasher, PasswordHasher>();
 
         return services;
     }
